@@ -138,6 +138,11 @@ class NetsuiteClient
     NetsuiteResult.new(res.writeResponse)
   end
 
+  def attach(ref)
+    res = @driver.attach(AttachRequest.new(ref))
+    NetsuiteResult.new(res.writeResponse)
+  end
+
   def get_select_value(klass, field)
     fieldDescription = GetSelectValueFieldDescription.new
     fieldDescription.recordType = constantize(klass)
