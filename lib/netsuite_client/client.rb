@@ -131,7 +131,7 @@ class NetsuiteClient
 
   def delete(ref)
     r = RecordRef.new
-    r.xmlattr_type = ref.class.to_s.split('::').last.sub(/^(\w)/) {|s|$1.downcase}
+    r.xmlattr_type = ref.class.to_s.split('::').last.sub(/^(\w)/) {|s|$1.to_s.downcase}
     r.xmlattr_internalId = ref.xmlattr_internalId
 
     res = @driver.delete(DeleteRequest.new(r))
@@ -237,9 +237,9 @@ class NetsuiteClient
   end
 
   def constantize(klass)
-    klass.constantize
+    eval(klass)
 
-    rescue NameError
-      "NetSuite::SOAP::#{klass}".constantize
+  rescue NameError
+    eval("NetSuite::SOAP::#{klass}")
   end
 end

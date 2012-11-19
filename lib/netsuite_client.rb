@@ -1,9 +1,6 @@
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
-require 'netsuite_client/string'
-require 'netsuite_client/symbol'
-
 require 'rubygems'
 gem 'soap4r-ruby1.9'
 
