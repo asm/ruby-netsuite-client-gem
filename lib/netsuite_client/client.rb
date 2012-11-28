@@ -144,9 +144,18 @@ class NetsuiteClient
   end
 
   def get_select_value(klass, field)
+    get_select_value_filter(klass, field)
+  end
+
+  def get_select_value_filter(klass, field, filter = nil, operator = 'is')
     fieldDescription = GetSelectValueFieldDescription.new
-    fieldDescription.recordType = constantize(klass)
+    fieldDescription.recordType = record_type_for(klass)
     fieldDescription.field = field
+
+    fieldDescription.filter = GetSelectValueFilter.new
+    fieldDescription.filter.filterValue = filter
+    fieldDescription.filter.xmlattr_operator = operator
+
     res = @driver.getSelectValue(:fieldDescription => fieldDescription, :pageIndex => 1).getSelectValueResult
     res.status.xmlattr_isSuccess ? res.baseRefList : nil
   end
@@ -241,8 +250,12 @@ class NetsuiteClient
     end
   end
 
+  def record_type_for(klass)
+    eval("RecordType::#{constantize(klass).name.split('::').last}")
+  end
+
   def constantize(klass)
-    eval(klass)
+    eval(klass.to_s)
 
   rescue NameError
     eval("NetSuite::SOAP::#{klass}")
