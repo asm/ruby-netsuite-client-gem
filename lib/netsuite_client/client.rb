@@ -31,6 +31,20 @@ class NetsuiteClient
     DefaultPrefs = {:account => '', :email => '', :password => ''}
   end
 
+  # This class empties the cookie jar before every request.  This is useful
+  # when the account you're using to connect is a concurrent web services user.
+  class CookieMonster < SOAP::Header::SimpleHandler
+    def initialize(driver)
+      @driver = driver
+      super(XSD::QName.new(nil, 'cookieMonster'))
+    end
+
+    def on_simple_outbound
+      @driver.streamhandler.client.cookie_manager.cookies = []
+      return nil
+    end
+  end
+
   attr_accessor :logger
 
   def initialize(config = {})
@@ -45,6 +59,10 @@ class NetsuiteClient
     @driver.headerhandler.add(PassportHeaderHandler.new(:email => @config[:email], :password => @config[:password], :account => @config[:account_id], :role => role))
     @driver.headerhandler.add(PreferencesHeaderHandler.new)      
     @driver.headerhandler.add(SearchPreferencesHeaderHandler.new)
+
+    if @config[:concurrent_user]
+      @driver.headerhandler.add(CookieMonster.new(@driver))
+    end
   end
 
   def debug=(value)
