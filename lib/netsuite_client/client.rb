@@ -188,6 +188,11 @@ class NetsuiteClient
     NetsuiteResult.new(res.getCustomizationIdResult)
   end
 
+  def initialize_record(record)
+    res = @driver.initialize(InitializeRequest.new(record))
+    NetsuiteResult.new(res.readResponse)
+  end
+
   # Get the full result set (possibly across multiple pages).
   def full_basic_search(basic)
     records, res = exec_basic_search(basic)
